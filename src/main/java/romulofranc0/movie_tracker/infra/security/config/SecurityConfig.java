@@ -1,4 +1,4 @@
-package romulofranc0.movie_tracker.infra.security;
+package romulofranc0.movie_tracker.infra.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
