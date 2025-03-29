@@ -9,9 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import romulofranc0.movie_tracker.application.models.requests.AuthRequest;
 import romulofranc0.movie_tracker.application.models.requests.RegisterRequest;
+import romulofranc0.movie_tracker.application.models.responses.LoginResponse;
 import romulofranc0.movie_tracker.domain.entities.AppUser;
 import romulofranc0.movie_tracker.domain.services.AuthService;
 import romulofranc0.movie_tracker.infra.repositories.UserRepository;
+import romulofranc0.movie_tracker.infra.security.services.TokenService;
 
 @RestController
 @RequestMapping("auth")
@@ -23,6 +25,8 @@ public class AuthController {
     private AuthService authService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TokenService tokenService;
 
 
     @PostMapping("/login")
@@ -30,7 +34,9 @@ public class AuthController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password());
         var auth = authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((AppUser)auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponse(token));
     }
 
     @PostMapping("/register")
