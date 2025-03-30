@@ -5,8 +5,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import romulofranc0.movie_tracker.domain.entities.AppUser;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Long> {
 
-    UserDetails findByUsername(String username);
+    Optional<AppUser> findByUsername(String username);
 }
