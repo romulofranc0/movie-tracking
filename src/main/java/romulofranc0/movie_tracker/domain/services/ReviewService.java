@@ -29,7 +29,16 @@ public class ReviewService {
 
     @Transactional
     public void createReview(ReviewRequest reviewRequest){
-        if(!reviewRepository.existsReviewByMovieImdbID(reviewRequest.imdbId())){
+        final int MAX_COMMENT_LENGTH = 500;
+
+        if(reviewRequest.rating() > 10 || reviewRequest.rating() < 0){
+            throw new IllegalArgumentException("Rating must be between 0 and 10");
+        }
+
+        if (reviewRequest.comment() != null && reviewRequest.comment().length() > MAX_COMMENT_LENGTH) {
+            throw new IllegalArgumentException("Comment cannot exceed " + MAX_COMMENT_LENGTH + " characters");
+        }
+        if(!reviewRepository.existsReviewByMovieImdbIDAndUserId(reviewRequest.imdbId(),reviewRequest.userId())) {
 
         MovieResponse omdbResponse = omdbService.getMovie(reviewRequest.imdbId());
         AppUser user = userRepository.findById(reviewRequest.userId()).orElseThrow(() -> new RuntimeException("User not found"));
@@ -42,6 +51,7 @@ public class ReviewService {
         movie.setPlot(omdbResponse.Plot());
         movie.setPoster(omdbResponse.Poster());
         movie.setImdbID(omdbResponse.imdbID());
+        movieRepository.save(movie);
 
         Review review = Review.builder()
                 .reviewDate(LocalDate.now())
@@ -51,7 +61,8 @@ public class ReviewService {
                 .rating(reviewRequest.rating())
                 .watchDate(reviewRequest.watchDate())
                 .build();
-        reviewRepository.save(review);
+
+           reviewRepository.save(review);
 
 
         }else {
@@ -62,13 +73,12 @@ public class ReviewService {
 
     public ReviewResponse getReviewById(Long reviewId){
        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
-       ReviewResponse reviewResponse = new ReviewResponse(
-                review.getId(),
-                review.getMovie().getImdbID(),
-                review.getRating(),
-                review.getComment(),
-                review.getWatchDate());
-        return reviewResponse;
+        return new ReviewResponse(
+                 review.getId(),
+                 review.getMovie().getImdbID(),
+                 review.getRating(),
+                 review.getComment(),
+                 review.getWatchDate());
     }
 
     public void updateReview(ReviewRequest reviewRequest){
