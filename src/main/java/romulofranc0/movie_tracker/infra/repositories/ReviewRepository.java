@@ -6,5 +6,5 @@ import romulofranc0.movie_tracker.domain.entities.Review;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    boolean existsReviewByMovieImdbID(String imdbId);
+    boolean existsReviewByMovieImdbIDAndUserId(String imdbId,Long userId);
 }
