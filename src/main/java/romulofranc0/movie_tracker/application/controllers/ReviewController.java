@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("/review")
 public class ReviewController {
     private final ReviewService reviewService;
-    private final ReviewRepository reviewRepository;
 
     @PostMapping
     public void createReview(@RequestBody ReviewRequest reviewRequest) {

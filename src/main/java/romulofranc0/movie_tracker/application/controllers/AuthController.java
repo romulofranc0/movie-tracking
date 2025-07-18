@@ -1,36 +1,37 @@
 package romulofranc0.movie_tracker.application.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import romulofranc0.movie_tracker.application.models.requests.AuthRequest;
 import romulofranc0.movie_tracker.application.models.requests.RegisterRequest;
 import romulofranc0.movie_tracker.application.models.responses.LoginResponse;
 import romulofranc0.movie_tracker.domain.entities.AppUser;
+import romulofranc0.movie_tracker.domain.exceptions.UserAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.services.AuthService;
 import romulofranc0.movie_tracker.infra.repositories.UserRepository;
 import romulofranc0.movie_tracker.infra.security.services.TokenService;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/api/auth")
 public class AuthController {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TokenService tokenService;
+    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
+    private final UserRepository userRepository;
+    private final TokenService tokenService;
 
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid AuthRequest authRequest) {
+    public ResponseEntity<?> login(@RequestBody @Valid AuthRequest authRequest) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password());
         var auth = authenticationManager.authenticate(usernamePassword);
 
@@ -40,14 +41,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid RegisterRequest registerRequest) {
-        if (userRepository.findByUsername(registerRequest.username()) != null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
+        if (userRepository.findByUsername(registerRequest.username()).isPresent()) {
+            throw new UserAlreadyExistsException("User already registered");
         }
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerRequest.password());
-        AppUser user = new AppUser(registerRequest.username(), encryptedPassword,registerRequest.email(),registerRequest.role());
+        AppUser user = new AppUser(registerRequest.username(), encryptedPassword,registerRequest.email(), registerRequest.role());
 
         userRepository.save(user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 }
