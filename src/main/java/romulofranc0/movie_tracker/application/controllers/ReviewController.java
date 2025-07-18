@@ -16,26 +16,28 @@ import java.util.List;
 @RequestMapping("/review")
 public class ReviewController {
     private final ReviewService reviewService;
-    private final ReviewRepository reviewRepository;
 
     @PostMapping
     public void createReview(@RequestBody ReviewRequest reviewRequest) {
         reviewService.createReview(reviewRequest);
     }
 
-    @GetMapping
-    public ResponseEntity<ReviewResponse> getReviewById(@RequestParam Long id){
+    @GetMapping("/{id}")
+    public ResponseEntity<ReviewResponse> getReviewById(@PathVariable Long id){
         return ResponseEntity.ok(reviewService.getReviewById(id));
     }
 
-    @DeleteMapping
-    public void deleteReviewById(@RequestParam Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReviewById(@PathVariable Long id){
+
         reviewService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping
-    public void updateReviewById(@RequestBody ReviewRequest reviewRequest) {
+    public ResponseEntity<Void> updateReviewById(@RequestBody ReviewRequest reviewRequest) {
     reviewService.updateReview(reviewRequest);
+    return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/all")
