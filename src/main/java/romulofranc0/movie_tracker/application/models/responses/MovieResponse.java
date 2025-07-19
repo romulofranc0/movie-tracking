@@ -9,10 +9,7 @@ public record MovieResponse(
         @JsonProperty("Plot") String Plot,
         @JsonProperty("Year") String Year,
         @JsonProperty("Genre") String Genre,
-        @JsonProperty("Type") String Type,
         @JsonProperty("imdbID") String imdbID,
-        @JsonProperty("Poster") String Poster,
-        @JsonProperty("Response") String Response,
-        @JsonProperty("Error") String Error
+        @JsonProperty("Poster") String Poster
 ) {}
 
