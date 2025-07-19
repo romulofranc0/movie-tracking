@@ -28,6 +28,17 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<MovieList> movieLists = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_followers",
+            joinColumns = @JoinColumn(name = "followed_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private Set<AppUser> followers = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
+    private Set<AppUser> following = new HashSet<>();
+
     public AppUser(String username, String password,String email, Role role) {
         this.username = username;
         this.password = password;
