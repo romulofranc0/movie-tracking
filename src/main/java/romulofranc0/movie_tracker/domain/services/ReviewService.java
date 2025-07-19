@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
 import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
-import romulofranc0.movie_tracker.domain.entities.AppUser;
+import romulofranc0.movie_tracker.domain.entities.User;
 import romulofranc0.movie_tracker.domain.entities.Movie;
 import romulofranc0.movie_tracker.domain.entities.Review;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewAlreadyExistsException;
@@ -41,7 +41,7 @@ public class ReviewService {
         if(!reviewRepository.existsReviewByMovieImdbIDAndUserId(reviewRequest.imdbId(),reviewRequest.userId())) {
 
         MovieResponse omdbResponse = omdbService.getMovie(reviewRequest.imdbId());
-        AppUser user = userRepository.findById(reviewRequest.userId()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(reviewRequest.userId()).orElseThrow(() -> new RuntimeException("User not found"));
 
         Movie movie = new Movie();
         movie.setDirector(omdbResponse.Director());

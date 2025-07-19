@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import romulofranc0.movie_tracker.domain.entities.AppUser;
+import romulofranc0.movie_tracker.domain.entities.User;
 import romulofranc0.movie_tracker.infra.repositories.UserRepository;
 import romulofranc0.movie_tracker.infra.security.services.TokenService;
 
@@ -32,7 +32,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
             try{
             var username = tokenService.validateToken(token);
-            AppUser userDetails = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+            User userDetails = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
             var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -15,7 +15,7 @@ import java.util.Set;
 @Entity
 @Data
 @NoArgsConstructor
-public class AppUser implements UserDetails {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,12 +34,12 @@ public class AppUser implements UserDetails {
             joinColumns = @JoinColumn(name = "followed_id"),
             inverseJoinColumns = @JoinColumn(name = "follower_id")
     )
-    private Set<AppUser> followers = new HashSet<>();
+    private Set<User> followers = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
-    private Set<AppUser> following = new HashSet<>();
+    private Set<User> following = new HashSet<>();
 
-    public AppUser(String username, String password,String email, Role role) {
+    public User(String username, String password, String email, Role role) {
         this.username = username;
         this.password = password;
         this.email = email;
