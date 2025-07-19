@@ -2,7 +2,6 @@ package romulofranc0.movie_tracker.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
 
 import java.time.LocalDate;
 
@@ -21,7 +20,7 @@ public class Review {
     private Movie movie;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private AppUser user;
+    private User user;
     @Column(nullable = false)
     private Float rating;
     @Column(nullable = false)
@@ -31,7 +30,7 @@ public class Review {
     private LocalDate reviewDate;
 
     @Builder
-    public Review(Movie movie, AppUser user, Float rating, String comment, LocalDate watchDate, LocalDate reviewDate) {
+    public Review(Movie movie, User user, Float rating, String comment, LocalDate watchDate, LocalDate reviewDate) {
         this.movie = movie;
         this.user = user;
         this.rating = rating;

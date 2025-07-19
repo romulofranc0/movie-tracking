@@ -17,7 +17,7 @@ public class MovieList {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private AppUser user;
+    private User user;
 
     @ManyToMany
     @JoinTable(

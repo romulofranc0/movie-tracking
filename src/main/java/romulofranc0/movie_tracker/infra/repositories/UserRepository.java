@@ -1,14 +1,13 @@
 package romulofranc0.movie_tracker.infra.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
-import romulofranc0.movie_tracker.domain.entities.AppUser;
+import romulofranc0.movie_tracker.domain.entities.User;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<AppUser, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<AppUser> findByUsername(String username);
+    Optional<User> findByUsername(String username);
 }

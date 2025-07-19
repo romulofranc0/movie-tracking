@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import romulofranc0.movie_tracker.application.models.requests.AuthRequest;
 import romulofranc0.movie_tracker.application.models.requests.RegisterRequest;
 import romulofranc0.movie_tracker.application.models.responses.LoginResponse;
-import romulofranc0.movie_tracker.domain.entities.AppUser;
+import romulofranc0.movie_tracker.domain.entities.User;
 import romulofranc0.movie_tracker.domain.exceptions.UserAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.services.AuthService;
 import romulofranc0.movie_tracker.infra.repositories.UserRepository;
@@ -35,7 +35,7 @@ public class AuthController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password());
         var auth = authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((AppUser)auth.getPrincipal());
+        var token = tokenService.generateToken((User)auth.getPrincipal());
 
         return ResponseEntity.ok(new LoginResponse(token));
     }
@@ -46,7 +46,7 @@ public class AuthController {
             throw new UserAlreadyExistsException("User already registered");
         }
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerRequest.password());
-        AppUser user = new AppUser(registerRequest.username(), encryptedPassword,registerRequest.email(), registerRequest.role());
+        User user = new User(registerRequest.username(), encryptedPassword,registerRequest.email(), registerRequest.role());
 
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
