@@ -8,7 +8,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -22,6 +25,17 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
     private Role role;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_followers",
+            joinColumns = @JoinColumn(name = "followed_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private Set<AppUser> followers = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
+    private Set<AppUser> following = new HashSet<>();
 
     public AppUser(String username, String password,String email, Role role) {
         this.username = username;
