@@ -1,4 +1,4 @@
-# Movie Tracker 🎬
+# MovieHub 🎬
 
 A personal movie tracking/journal application built with **Java Spring Boot**. This project helps you keep track of the movies you've watched, including details like the watch date, your rating, and comments.
 
