@@ -27,6 +27,8 @@ public class User implements UserDetails {
     private Role role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<MovieList> movieLists = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<ReviewComment> reviewComments;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

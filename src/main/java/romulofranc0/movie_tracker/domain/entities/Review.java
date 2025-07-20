@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,19 +26,20 @@ public class Review {
     @Column(nullable = false)
     private Float rating;
     @Column(nullable = false)
-    private String comment;
+    private String reviewText;
     @Column(nullable = false)
     private LocalDate watchDate;
     private LocalDate reviewDate;
+
+    @OneToMany(mappedBy = "review_id")
+    private Set<ReviewComment> reviewComments;
 
     @Builder
     public Review(Movie movie, User user, Float rating, String comment, LocalDate watchDate, LocalDate reviewDate) {
         this.movie = movie;
         this.user = user;
         this.rating = rating;
-        this.comment = comment;
+        this.reviewText = comment;
         this.watchDate = watchDate;
-        this.reviewDate = reviewDate;
     }
-
 }

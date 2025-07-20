@@ -2,16 +2,20 @@ package romulofranc0.movie_tracker.domain.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
 import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
+import romulofranc0.movie_tracker.domain.entities.ReviewComment;
 import romulofranc0.movie_tracker.domain.entities.User;
 import romulofranc0.movie_tracker.domain.entities.Movie;
 import romulofranc0.movie_tracker.domain.entities.Review;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewNotFoundException;
 import romulofranc0.movie_tracker.infra.repositories.MovieRepository;
+import romulofranc0.movie_tracker.infra.repositories.ReviewCommentRepository;
 import romulofranc0.movie_tracker.infra.repositories.ReviewRepository;
 import romulofranc0.movie_tracker.infra.repositories.UserRepository;
 import java.time.LocalDate;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewCommentRepository reviewCommentRepository;
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final OmdbService omdbService;
@@ -35,7 +40,7 @@ public class ReviewService {
             throw new IllegalArgumentException("Rating must be between 0 and 10");
         }
 
-        if (reviewRequest.comment() != null && reviewRequest.comment().length() > MAX_COMMENT_LENGTH) {
+        if (reviewRequest.reviewText() != null && reviewRequest.reviewText().length() > MAX_COMMENT_LENGTH) {
             throw new IllegalArgumentException("Comment cannot exceed " + MAX_COMMENT_LENGTH + " characters");
         }
         if(!reviewRepository.existsReviewByMovieImdbIDAndUserId(reviewRequest.imdbId(),reviewRequest.userId())) {
@@ -57,7 +62,7 @@ public class ReviewService {
                 .reviewDate(LocalDate.now())
                 .user(user)
                 .movie(movie)
-                .comment(reviewRequest.comment())
+                .comment(reviewRequest.reviewText())
                 .rating(reviewRequest.rating())
                 .watchDate(reviewRequest.watchDate())
                 .build();
@@ -77,13 +82,14 @@ public class ReviewService {
                  review.getId(),
                  review.getMovie().getImdbID(),
                  review.getRating(),
-                 review.getComment(),
+                 review.getReviewText(),
                  review.getWatchDate());
     }
 
+    @Transactional
     public void updateReview(ReviewRequest reviewRequest){
         Review review = reviewRepository.findById(reviewRequest.reviewId()).orElseThrow(() -> new ReviewNotFoundException(reviewRequest.reviewId()));
-        if(reviewRequest.comment() != null)review.setComment(reviewRequest.comment());
+        if(reviewRequest.reviewText() != null)review.setReviewText(reviewRequest.reviewText());
         if(reviewRequest.rating() != null)review.setRating(reviewRequest.rating());
         if(reviewRequest.watchDate() != null)review.setWatchDate(reviewRequest.watchDate());
         reviewRepository.save(review);
@@ -100,9 +106,25 @@ public class ReviewService {
                         review.getUser().getId(),
                         review.getMovie().getImdbID(),
                         review.getRating(),
-                        review.getComment(),
+                        review.getReviewText(),
                         review.getWatchDate()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void createComment(CommentRequest commentRequest){
+        String commenterUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(commenterUsername).orElseThrow(() -> new RuntimeException("User not found"));
+        Review review = reviewRepository.findById(commentRequest.reviewId()).orElseThrow(() -> new ReviewNotFoundException(commentRequest.reviewId()));
+
+        ReviewComment reviewComment = new ReviewComment();
+
+        reviewComment.setCommentText(commentRequest.comment());
+        reviewComment.setUser(user);
+        reviewComment.setReview(review);
+
+        reviewCommentRepository.save(reviewComment);
+
     }
 }
