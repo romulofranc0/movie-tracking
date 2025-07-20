@@ -36,4 +36,20 @@ public class UserService {
         userRepository.save(userFollowed);
         userRepository.save(userFollowing);
     }
+
+    @Transactional
+    public void unfollow(Long id){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        AppUser userUnfollowing = userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("User not found"));
+        AppUser userUnfollowed = userRepository.findById(id).orElseThrow(()->new UsernameNotFoundException("User not found"));
+
+        userUnfollowing.getFollowing().remove(userUnfollowed);
+        userUnfollowed.getFollowers().remove(userUnfollowing);
+
+        userRepository.save(userUnfollowing);
+        userRepository.save(userUnfollowed);
+
+    }
 }

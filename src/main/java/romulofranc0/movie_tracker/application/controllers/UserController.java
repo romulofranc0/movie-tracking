@@ -21,4 +21,10 @@ public class UserController {
         userService.follow(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/unfollow/{id}")
+    public ResponseEntity<?> unfollow(@PathVariable Long id){
+        userService.unfollow(id);
+        return ResponseEntity.ok().build();
+    }
 }

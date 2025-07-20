@@ -3,6 +3,7 @@ package romulofranc0.movie_tracker.application.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
 import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
 import romulofranc0.movie_tracker.domain.entities.Review;
@@ -44,4 +45,12 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponse>> getAllReviews(){
         return ResponseEntity.ok(reviewService.getAllReviews());
     }
+
+    @PostMapping("/comment")
+    public ResponseEntity<?> createComment(@RequestBody CommentRequest commentRequest){
+        reviewService.createComment(commentRequest);
+       return ResponseEntity.noContent().build();
+    }
+
+
 }

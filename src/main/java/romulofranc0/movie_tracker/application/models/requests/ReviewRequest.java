@@ -7,7 +7,7 @@ public record ReviewRequest(
         Long userId,
         String imdbId,
         Float rating,
-        String comment,
+        String reviewText,
         LocalDate watchDate
 ) {
 }
