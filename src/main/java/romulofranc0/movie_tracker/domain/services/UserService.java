@@ -42,8 +42,8 @@ public class UserService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
 
-        AppUser userUnfollowing = userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("User not found"));
-        AppUser userUnfollowed = userRepository.findById(id).orElseThrow(()->new UsernameNotFoundException("User not found"));
+        User userUnfollowing = userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("User not found"));
+        User userUnfollowed = userRepository.findById(id).orElseThrow(()->new UsernameNotFoundException("User not found"));
 
         userUnfollowing.getFollowing().remove(userUnfollowed);
         userUnfollowed.getFollowers().remove(userUnfollowing);

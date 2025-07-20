@@ -2,6 +2,7 @@ package romulofranc0.movie_tracker.domain.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
@@ -14,6 +15,7 @@ import romulofranc0.movie_tracker.domain.entities.Movie;
 import romulofranc0.movie_tracker.domain.entities.Review;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewNotFoundException;
+import romulofranc0.movie_tracker.domain.exceptions.UserNotFoundException;
 import romulofranc0.movie_tracker.infra.repositories.MovieRepository;
 import romulofranc0.movie_tracker.infra.repositories.ReviewCommentRepository;
 import romulofranc0.movie_tracker.infra.repositories.ReviewRepository;
@@ -22,6 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ReviewService {
@@ -33,7 +36,11 @@ public class ReviewService {
     private final OmdbService omdbService;
 
     @Transactional
-    public void createReview(ReviewRequest reviewRequest){
+    public Review createReview(ReviewRequest reviewRequest){
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info(username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
+
         final int MAX_COMMENT_LENGTH = 500;
 
         if(reviewRequest.rating() > 10 || reviewRequest.rating() < 0){
@@ -43,10 +50,9 @@ public class ReviewService {
         if (reviewRequest.reviewText() != null && reviewRequest.reviewText().length() > MAX_COMMENT_LENGTH) {
             throw new IllegalArgumentException("Comment cannot exceed " + MAX_COMMENT_LENGTH + " characters");
         }
-        if(!reviewRepository.existsReviewByMovieImdbIDAndUserId(reviewRequest.imdbId(),reviewRequest.userId())) {
+        if(!reviewRepository.existsReviewByMovieImdbIDAndUserId(reviewRequest.imdbId(),user.getId())) {
 
         MovieResponse omdbResponse = omdbService.getMovie(reviewRequest.imdbId());
-        User user = userRepository.findById(reviewRequest.userId()).orElseThrow(() -> new RuntimeException("User not found"));
 
         Movie movie = new Movie();
         movie.setDirector(omdbResponse.Director());
@@ -70,14 +76,14 @@ public class ReviewService {
            reviewRepository.save(review);
 
 
+    return review;
         }else {
-            throw new ReviewAlreadyExistsException(reviewRequest.imdbId());
+            throw new ReviewAlreadyExistsException("review already exists");
         }
-
     }
 
     public ReviewResponse getReviewById(Long reviewId){
-       Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
+       Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("review not found"));
         return new ReviewResponse(
                  review.getId(),
                  review.getMovie().getImdbID(),
@@ -88,7 +94,10 @@ public class ReviewService {
 
     @Transactional
     public void updateReview(ReviewRequest reviewRequest){
-        Review review = reviewRepository.findById(reviewRequest.reviewId()).orElseThrow(() -> new ReviewNotFoundException(reviewRequest.reviewId()));
+        Review review = reviewRepository
+                .findByImdbIdAndUsername(reviewRequest.imdbId(), SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ReviewNotFoundException("Review not found"));
+
         if(reviewRequest.reviewText() != null)review.setReviewText(reviewRequest.reviewText());
         if(reviewRequest.rating() != null)review.setRating(reviewRequest.rating());
         if(reviewRequest.watchDate() != null)review.setWatchDate(reviewRequest.watchDate());
@@ -116,7 +125,7 @@ public class ReviewService {
     public void createComment(CommentRequest commentRequest){
         String commenterUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(commenterUsername).orElseThrow(() -> new RuntimeException("User not found"));
-        Review review = reviewRepository.findById(commentRequest.reviewId()).orElseThrow(() -> new ReviewNotFoundException(commentRequest.reviewId()));
+        Review review = reviewRepository.findById(commentRequest.reviewId()).orElseThrow(() -> new ReviewNotFoundException("review not found"));
 
         ReviewComment reviewComment = new ReviewComment();
 

@@ -12,7 +12,7 @@ import romulofranc0.movie_tracker.domain.services.OmdbService;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/movie")
+@RequestMapping("/api/movie")
 public class MovieController {
 
     private final OmdbService omdbService;

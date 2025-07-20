@@ -11,7 +11,7 @@ import romulofranc0.movie_tracker.infra.repositories.UserRepository;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;

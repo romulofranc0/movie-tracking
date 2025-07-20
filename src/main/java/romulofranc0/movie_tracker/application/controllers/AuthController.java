@@ -24,6 +24,7 @@ import romulofranc0.movie_tracker.infra.security.services.TokenService;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
     private final UserRepository userRepository;
@@ -42,13 +43,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
-        if (userRepository.findByUsername(registerRequest.username()).isPresent()) {
-            throw new UserAlreadyExistsException("User already registered");
-        }
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registerRequest.password());
-        User user = new User(registerRequest.username(), encryptedPassword,registerRequest.email(), registerRequest.role());
 
-        userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(registerRequest));
     }
 }

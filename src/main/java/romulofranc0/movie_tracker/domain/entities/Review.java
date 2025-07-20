@@ -31,7 +31,7 @@ public class Review {
     private LocalDate watchDate;
     private LocalDate reviewDate;
 
-    @OneToMany(mappedBy = "review_id")
+    @OneToMany(mappedBy = "review")
     private Set<ReviewComment> reviewComments;
 
     @Builder
@@ -41,5 +41,6 @@ public class Review {
         this.rating = rating;
         this.reviewText = comment;
         this.watchDate = watchDate;
+        this.reviewDate = reviewDate;
     }
 }

@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Entity
 @Data
 @NoArgsConstructor
+@Entity
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

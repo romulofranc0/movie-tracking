@@ -1,6 +1,7 @@
 package romulofranc0.movie_tracker.application.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
@@ -14,13 +15,14 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/review")
+@RequestMapping("/api/review")
 public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public void createReview(@RequestBody ReviewRequest reviewRequest) {
+    public ResponseEntity<?> createReview(@RequestBody ReviewRequest reviewRequest) {
         reviewService.createReview(reviewRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}")

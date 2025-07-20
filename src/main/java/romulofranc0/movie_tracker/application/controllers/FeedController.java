@@ -17,6 +17,6 @@ public class FeedController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserFeed(@PathVariable("userId") Long userId) {
-
+        return ResponseEntity.ok().body(feedService.getUserFeed(userId));
     }
 }

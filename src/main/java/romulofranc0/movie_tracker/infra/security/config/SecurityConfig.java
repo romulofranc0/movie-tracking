@@ -30,9 +30,12 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers("/review/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "api/movie/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "api/movie/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "api/auth/register").permitAll()
+                        .requestMatchers("/api/review/**").hasRole("USER")
+                        .requestMatchers("/feed/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -17,7 +17,7 @@ public class ReviewMapper {
                     review.getUser().getId(),
                     review.getMovie().getImdbID(),
                     review.getRating(),
-                    review.getComment(),
+                    review.getReviewText(),
                     review.getWatchDate()
             );
             responses.add(reviewResponse);
