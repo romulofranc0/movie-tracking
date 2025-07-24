@@ -6,9 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import romulofranc0.movie_tracker.application.models.requests.MovieListRequest;
 import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
+import romulofranc0.movie_tracker.application.models.responses.SearchMovieResponse;
+import romulofranc0.movie_tracker.application.models.responses.SearchResponse;
 import romulofranc0.movie_tracker.application.models.responses.SearchResponseWrapper;
 import romulofranc0.movie_tracker.domain.services.MovieListService;
 import romulofranc0.movie_tracker.domain.services.OmdbService;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -19,9 +23,8 @@ public class MovieController {
     private final MovieListService movieListService;
 
     @GetMapping("/search")
-    public ResponseEntity<SearchResponseWrapper> searchMovie(@RequestParam String title) {
-        SearchResponseWrapper searchResponse = omdbService.search(title);
-        return ResponseEntity.ok(searchResponse);
+    public ResponseEntity<List<SearchMovieResponse>> searchMovie(@RequestParam String title) {
+        return ResponseEntity.ok(omdbService.search(title));
     }
 
     @GetMapping()

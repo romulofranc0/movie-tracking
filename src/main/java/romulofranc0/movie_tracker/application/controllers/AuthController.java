@@ -7,15 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-<<<<<<< Updated upstream
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-=======
-import org.springframework.web.bind.annotation.*;
->>>>>>> Stashed changes
 import romulofranc0.movie_tracker.application.models.requests.AuthRequest;
 import romulofranc0.movie_tracker.application.models.requests.RegisterRequest;
 import romulofranc0.movie_tracker.application.models.responses.ErrorResponse;
@@ -25,9 +20,6 @@ import romulofranc0.movie_tracker.domain.exceptions.UserAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.services.AuthService;
 import romulofranc0.movie_tracker.infra.repositories.UserRepository;
 import romulofranc0.movie_tracker.infra.security.services.TokenService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController

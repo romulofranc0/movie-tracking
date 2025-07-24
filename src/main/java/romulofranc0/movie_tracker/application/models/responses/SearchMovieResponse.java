@@ -1,13 +1,9 @@
 package romulofranc0.movie_tracker.application.models.responses;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public record MovieResponse(
+public record SearchMovieResponse(
         String title,
-        String director,
-        String plot,
         String year,
-        String genre,
+        String type,
         String imdbID,
         String poster
 ) {
