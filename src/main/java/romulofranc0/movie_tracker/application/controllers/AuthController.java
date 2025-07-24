@@ -5,20 +5,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+<<<<<<< Updated upstream
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+=======
+import org.springframework.web.bind.annotation.*;
+>>>>>>> Stashed changes
 import romulofranc0.movie_tracker.application.models.requests.AuthRequest;
 import romulofranc0.movie_tracker.application.models.requests.RegisterRequest;
+import romulofranc0.movie_tracker.application.models.responses.ErrorResponse;
 import romulofranc0.movie_tracker.application.models.responses.LoginResponse;
 import romulofranc0.movie_tracker.domain.entities.User;
 import romulofranc0.movie_tracker.domain.exceptions.UserAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.services.AuthService;
 import romulofranc0.movie_tracker.infra.repositories.UserRepository;
 import romulofranc0.movie_tracker.infra.security.services.TokenService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,17 +42,26 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid AuthRequest authRequest) {
-        var usernamePassword = new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password());
-        var auth = authenticationManager.authenticate(usernamePassword);
+        try{
+            var usernamePassword = new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password());
+            var auth = authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((User)auth.getPrincipal());
+            var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        return ResponseEntity.ok(new LoginResponse(token));
+            return ResponseEntity.ok(new LoginResponse(token));
+        } catch (BadCredentialsException e){
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(e.getMessage(),"error"));
+        }
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(registerRequest));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(registerRequest));
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(e.getMessage(),"error"));
+        }
     }
 }
