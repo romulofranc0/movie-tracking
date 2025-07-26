@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import romulofranc0.movie_tracker.application.models.requests.MovieListRequest;
-import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchMovieResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchResponseWrapper;
+import romulofranc0.movie_tracker.application.models.responses.*;
 import romulofranc0.movie_tracker.domain.services.MovieListService;
 import romulofranc0.movie_tracker.domain.services.OmdbService;
 
@@ -28,8 +25,8 @@ public class MovieController {
     }
 
     @GetMapping()
-    public ResponseEntity<MovieResponse> getMovie(@RequestParam String imdbId) {
-        MovieResponse movieResponse = omdbService.getMovie(imdbId);
+    public ResponseEntity<ClientMovieResponse> getMovie(@RequestParam String imdbId) {
+        ClientMovieResponse movieResponse = omdbService.getMovie(imdbId);
         return ResponseEntity.ok(movieResponse);
     }
 

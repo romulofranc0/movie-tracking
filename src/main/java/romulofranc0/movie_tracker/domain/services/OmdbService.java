@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import romulofranc0.movie_tracker.application.clients.OmdbClient;
-import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchMovieResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchResponseWrapper;
+import romulofranc0.movie_tracker.application.models.responses.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +39,10 @@ public class OmdbService {
 
     }
 
-    public MovieResponse getMovie(String imdbId) {
+    public ClientMovieResponse getMovie(String imdbId) {
         var movieResult = omdbClient.getMovie(imdbId, apiKey);
 
-        MovieResponse  movieResponse = new MovieResponse(
+        ClientMovieResponse  movieResponse = new ClientMovieResponse(
                 movieResult.Title(),
                 movieResult.Director(),
                 movieResult.Plot(),

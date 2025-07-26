@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
+import romulofranc0.movie_tracker.application.models.responses.ClientMovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
 import romulofranc0.movie_tracker.domain.entities.ReviewComment;
@@ -52,7 +53,7 @@ public class ReviewService {
         }
         if(!reviewRepository.existsReviewByMovieImdbIDAndUserId(reviewRequest.imdbId(),user.getId())) {
 
-        MovieResponse omdbResponse = omdbService.getMovie(reviewRequest.imdbId());
+        ClientMovieResponse omdbResponse = omdbService.getMovie(reviewRequest.imdbId());
 
         Movie movie = new Movie();
         movie.setDirector(omdbResponse.Director());
