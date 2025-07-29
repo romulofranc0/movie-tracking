@@ -20,6 +20,7 @@ public class Movie{
     private String genre;
     private String poster;
     private String plot;
+    private String imdbRating;
 
     @ManyToMany(mappedBy = "movies")
     private Set<MovieList> movieLists = new HashSet<MovieList>();

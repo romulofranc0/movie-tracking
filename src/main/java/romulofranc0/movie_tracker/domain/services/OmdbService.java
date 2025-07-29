@@ -1,30 +1,57 @@
 package romulofranc0.movie_tracker.domain.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import romulofranc0.movie_tracker.application.clients.OmdbClient;
-import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchResponse;
-import romulofranc0.movie_tracker.application.models.responses.SearchResponseWrapper;
+import romulofranc0.movie_tracker.application.models.responses.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+@RequiredArgsConstructor
 @Service
 public class OmdbService {
+
     @Value("${omdb.api.key}")
     private String apiKey;
 
-    private OmdbClient omdbClient;
+    private final OmdbClient omdbClient;
 
-    public OmdbService(OmdbClient omdbClient) {
-        this.omdbClient = omdbClient;
-    }
+    public List<SearchMovieResponse> search(String title) {
+        var searchResult = omdbClient.searchMovie(title,apiKey);
 
-    public SearchResponseWrapper search(String title) {
-        return omdbClient.searchMovie(title,apiKey);
+        List<SearchMovieResponse>  searchResponse = new ArrayList<>();
+
+        searchResult.Search().forEach(movie -> {
+            SearchMovieResponse searchMovieResponse = new SearchMovieResponse(
+                    movie.Title(),
+                    movie.Year(),
+                    movie.Type(),
+                    movie.imdbID(),
+                    movie.Poster()
+            );
+            searchResponse.add(searchMovieResponse);
+        });
+
+        return searchResponse;
+
     }
 
     public MovieResponse getMovie(String imdbId) {
-        return omdbClient.getMovie(imdbId, apiKey);
+        var movieResult = omdbClient.getMovie(imdbId, apiKey);
+
+        MovieResponse  movieResponse = new MovieResponse(
+                movieResult.Title(),
+                movieResult.Director(),
+                movieResult.Plot(),
+                movieResult.Year(),
+                movieResult.Genre(),
+                movieResult.imdbID(),
+                movieResult.Poster(),
+                movieResult.imdbRating()
+        );
+        return movieResponse;
     }
 }

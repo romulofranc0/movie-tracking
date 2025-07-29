@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
+import romulofranc0.movie_tracker.application.models.responses.ClientMovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
 import romulofranc0.movie_tracker.domain.entities.ReviewComment;
@@ -55,12 +56,12 @@ public class ReviewService {
         MovieResponse omdbResponse = omdbService.getMovie(reviewRequest.imdbId());
 
         Movie movie = new Movie();
-        movie.setDirector(omdbResponse.Director());
-        movie.setGenre(omdbResponse.Genre());
-        movie.setTitle(omdbResponse.Title());
-        movie.setYear(omdbResponse.Year());
-        movie.setPlot(omdbResponse.Plot());
-        movie.setPoster(omdbResponse.Poster());
+        movie.setDirector(omdbResponse.director());
+        movie.setGenre(omdbResponse.genre());
+        movie.setTitle(omdbResponse.title());
+        movie.setYear(omdbResponse.year());
+        movie.setPlot(omdbResponse.plot());
+        movie.setPoster(omdbResponse.poster());
         movie.setImdbID(omdbResponse.imdbID());
         movieRepository.save(movie);
 

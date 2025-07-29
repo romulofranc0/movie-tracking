@@ -21,7 +21,9 @@ public class MovieMapper {
                     movie.getYear(),
                     movie.getGenre(),
                     movie.getImdbID(),
-                    movie.getPoster()
+                    movie.getPoster(),
+                    movie.getImdbRating()
+
             );
 
             movieResponses.add(movieResponse);
@@ -37,7 +39,8 @@ public class MovieMapper {
                 movie.getYear(),
                 movie.getGenre(),
                 movie.getImdbID(),
-                movie.getPoster()
+                movie.getPoster(),
+                movie.getImdbRating()
         );
     }
 }
