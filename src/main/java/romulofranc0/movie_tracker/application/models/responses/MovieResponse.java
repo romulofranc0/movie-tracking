@@ -9,6 +9,7 @@ public record MovieResponse(
         String year,
         String genre,
         String imdbID,
-        String poster
+        String poster,
+        String imdbRating
 ) {
 }

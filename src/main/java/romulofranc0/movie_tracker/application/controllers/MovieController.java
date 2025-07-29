@@ -25,8 +25,8 @@ public class MovieController {
     }
 
     @GetMapping()
-    public ResponseEntity<ClientMovieResponse> getMovie(@RequestParam String imdbId) {
-        ClientMovieResponse movieResponse = omdbService.getMovie(imdbId);
+    public ResponseEntity<MovieResponse> getMovie(@RequestParam String imdbId) {
+        MovieResponse movieResponse = omdbService.getMovie(imdbId);
         return ResponseEntity.ok(movieResponse);
     }
 

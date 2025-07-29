@@ -10,6 +10,7 @@ public record ClientMovieResponse(
         @JsonProperty("Year") String Year,
         @JsonProperty("Genre") String Genre,
         @JsonProperty("imdbID") String imdbID,
-        @JsonProperty("Poster") String Poster
+        @JsonProperty("Poster") String Poster,
+        @JsonProperty("imdbRating") String imdbRating
 ) {}
 

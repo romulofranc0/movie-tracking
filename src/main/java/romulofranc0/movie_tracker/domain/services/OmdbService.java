@@ -39,17 +39,18 @@ public class OmdbService {
 
     }
 
-    public ClientMovieResponse getMovie(String imdbId) {
+    public MovieResponse getMovie(String imdbId) {
         var movieResult = omdbClient.getMovie(imdbId, apiKey);
 
-        ClientMovieResponse  movieResponse = new ClientMovieResponse(
+        MovieResponse  movieResponse = new MovieResponse(
                 movieResult.Title(),
                 movieResult.Director(),
                 movieResult.Plot(),
                 movieResult.Year(),
                 movieResult.Genre(),
                 movieResult.imdbID(),
-                movieResult.Poster()
+                movieResult.Poster(),
+                movieResult.imdbRating()
         );
         return movieResponse;
     }
