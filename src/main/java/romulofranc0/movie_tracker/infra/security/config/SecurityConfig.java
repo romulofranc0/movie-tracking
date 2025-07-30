@@ -18,6 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import romulofranc0.movie_tracker.infra.security.SecurityFilter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,15 +39,17 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(HttpMethod.POST, "api/movie/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "api/movie/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/movie/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/movie/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers("/api/review/**").hasRole("USER")
-                        .requestMatchers("/feed/**").hasRole("USER")
+                        .requestMatchers("/api/feed/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+
+
     }
 
     @Bean
@@ -69,5 +73,16 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
+        converter.setAuthorityPrefix("");
+        converter.setAuthoritiesClaimName("roles");
+
+        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
+        return jwtConverter;
     }
 }

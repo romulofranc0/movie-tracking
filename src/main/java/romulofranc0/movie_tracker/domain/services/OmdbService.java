@@ -20,7 +20,8 @@ public class OmdbService {
     private final OmdbClient omdbClient;
 
     public List<SearchMovieResponse> search(String title) {
-        var searchResult = omdbClient.searchMovie(title,apiKey);
+        String type = "movie";
+        var searchResult = omdbClient.searchMovie(title, apiKey, type);
 
         List<SearchMovieResponse>  searchResponse = new ArrayList<>();
 
