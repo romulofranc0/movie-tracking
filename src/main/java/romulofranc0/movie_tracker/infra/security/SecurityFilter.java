@@ -30,18 +30,22 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.extractTokenFromHeader(request);
         if (token != null) {
-            try{
-            var username = tokenService.validateToken(token);
-            User userDetails = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+            try {
+                var username = tokenService.validateToken(token);
+                User userDetails = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
-            var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
+
         filterChain.doFilter(request, response);
     }
+
 
     private String extractTokenFromHeader(HttpServletRequest request) {
         var header = request.getHeader("Authorization");
