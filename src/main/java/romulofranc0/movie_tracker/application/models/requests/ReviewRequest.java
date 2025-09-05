@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record ReviewRequest(
         String imdbId,
-        Float rating,
+        Integer rating,
         String reviewText,
         LocalDate watchDate
 ) {

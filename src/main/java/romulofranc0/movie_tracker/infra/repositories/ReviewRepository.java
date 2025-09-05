@@ -18,4 +18,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("select r from Review r where r.movie.imdbID = :imdbId and r.user.username =:username")
     Optional<Review> findByImdbIdAndUsername(String imdbId, String username);
+
+    Boolean existsByMovieImdbIDAndUserId(String imdbId, Long userId);
 }

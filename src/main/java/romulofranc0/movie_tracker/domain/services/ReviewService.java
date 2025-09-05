@@ -3,11 +3,13 @@ package romulofranc0.movie_tracker.domain.services;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import romulofranc0.movie_tracker.application.mappers.ReviewMapper;
 import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
-import romulofranc0.movie_tracker.application.models.responses.ClientMovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
 import romulofranc0.movie_tracker.domain.entities.ReviewComment;
@@ -35,11 +37,11 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final OmdbService omdbService;
+    private final ReviewMapper reviewMapper;
 
     @Transactional
     public Review createReview(ReviewRequest reviewRequest){
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info(username);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
 
         final int MAX_COMMENT_LENGTH = 500;
@@ -71,7 +73,7 @@ public class ReviewService {
                 .movie(movie)
                 .comment(reviewRequest.reviewText())
                 .rating(reviewRequest.rating())
-                .watchDate(reviewRequest.watchDate())
+                .watchDate(reviewRequest.watchDate() != null ? reviewRequest.watchDate() : null)
                 .build();
 
            reviewRepository.save(review);
@@ -91,6 +93,29 @@ public class ReviewService {
                  review.getRating(),
                  review.getReviewText(),
                  review.getWatchDate());
+    }
+
+    public ReviewResponse getReviewByImdbId(String imdbId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        var username = auth.getName();
+
+        Review review = reviewRepository.findByImdbIdAndUsername(imdbId, username).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
+
+        return reviewMapper.toReviewResponse(review);
+    }
+
+    public Boolean reviewsExists(String imdbId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        var username = auth.getName();
+
+        Long userId = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"))
+                .getId();
+
+        return reviewRepository.existsByMovieImdbIDAndUserId(imdbId, userId);
     }
 
     @Transactional

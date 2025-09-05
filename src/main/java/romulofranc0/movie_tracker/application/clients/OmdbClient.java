@@ -17,6 +17,6 @@ public interface OmdbClient {
     @GetMapping("/")
     SearchResponseWrapper searchMovie(@RequestParam("s") String title, @RequestParam("apikey") String apiKey, @RequestParam("type") String type);
     @GetMapping("/")
-    ClientMovieResponse getMovie(@RequestParam("i") String imdbId, @RequestParam("apikey") String apiKey);
+    ClientMovieResponse getMovie(@RequestParam("i") String imdbId, @RequestParam("apikey") String apiKey, @RequestParam("plot")  String plot);
 
 }

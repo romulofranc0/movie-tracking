@@ -5,8 +5,8 @@ import java.time.LocalDate;
 public record ReviewResponse(
         Long userId,
         String imdbId,
-        Float rating,
-        String comment,
+        Integer rating,
+        String reviewText,
         LocalDate watchDate
 ) {
 

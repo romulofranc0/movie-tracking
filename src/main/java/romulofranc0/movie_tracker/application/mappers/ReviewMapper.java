@@ -10,6 +10,16 @@ import java.util.Set;
 @Component
 public class ReviewMapper {
 
+    public ReviewResponse toReviewResponse(Review review) {
+        ReviewResponse reviewResponse = new ReviewResponse(
+                review.getUser().getId(),
+                review.getMovie().getImdbID(),
+                review.getRating(),
+                review.getReviewText(),
+                review.getWatchDate());
+        return reviewResponse;
+    }
+
     public Set<ReviewResponse> toReviewResponses(Set<Review> reviews){
     Set<ReviewResponse> responses = new HashSet<>();
         for (Review review : reviews) {

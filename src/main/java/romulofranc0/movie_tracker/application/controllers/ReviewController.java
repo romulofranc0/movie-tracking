@@ -25,9 +25,19 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ReviewResponse> getReviewById(@PathVariable Long id){
         return ResponseEntity.ok(reviewService.getReviewById(id));
+    }
+
+    @GetMapping("/imdbId/{imdbId}")
+    public ResponseEntity<ReviewResponse> getReviewByImdbId(@PathVariable String imdbId){
+        return ResponseEntity.ok(reviewService.getReviewByImdbId(imdbId));
+    }
+
+    @GetMapping("/verify/{imdbId}")
+    public boolean verifyReview(@PathVariable String imdbId) {
+        return reviewService.reviewsExists(imdbId);
     }
 
     @DeleteMapping("/{id}")
