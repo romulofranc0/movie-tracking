@@ -100,7 +100,9 @@ public class ReviewService {
 
         var username = auth.getName();
 
-        Review review = reviewRepository.findByImdbIdAndUsername(imdbId, username).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Review review = reviewRepository.findByMovieImdbIDAndUserId(imdbId, user.getId()).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
 
         return reviewMapper.toReviewResponse(review);
     }
@@ -121,7 +123,7 @@ public class ReviewService {
     @Transactional
     public void updateReview(ReviewRequest reviewRequest){
         Review review = reviewRepository
-                .findByImdbIdAndUsername(reviewRequest.imdbId(), SecurityContextHolder.getContext().getAuthentication().getName())
+                .findById(reviewRequest.reviewId())
                 .orElseThrow(() -> new ReviewNotFoundException("Review not found"));
 
         if(reviewRequest.reviewText() != null)review.setReviewText(reviewRequest.reviewText());
@@ -136,9 +138,13 @@ public class ReviewService {
     }
 
     public List<ReviewResponse> getAllReviews() {
-        return reviewRepository.findAll().stream()
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        var username = auth.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return reviewRepository.findAllByUserId(user.getId()).stream()
                 .map(review -> new ReviewResponse(
-                        review.getUser().getId(),
+                        review.getId(),
                         review.getMovie().getImdbID(),
                         review.getRating(),
                         review.getReviewText(),
