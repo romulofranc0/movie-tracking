@@ -12,7 +12,7 @@ public class ReviewMapper {
 
     public ReviewResponse toReviewResponse(Review review) {
         ReviewResponse reviewResponse = new ReviewResponse(
-                review.getUser().getId(),
+                review.getId(),
                 review.getMovie().getImdbID(),
                 review.getRating(),
                 review.getReviewText(),
@@ -24,7 +24,7 @@ public class ReviewMapper {
     Set<ReviewResponse> responses = new HashSet<>();
         for (Review review : reviews) {
             ReviewResponse reviewResponse = new ReviewResponse(
-                    review.getUser().getId(),
+                    review.getId(),
                     review.getMovie().getImdbID(),
                     review.getRating(),
                     review.getReviewText(),
