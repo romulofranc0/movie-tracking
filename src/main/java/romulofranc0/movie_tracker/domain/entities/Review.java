@@ -24,10 +24,9 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @Column(nullable = false)
-    private Float rating;
-    @Column(nullable = false)
+    private Integer rating;
+    @Column(nullable = false, length = 500)
     private String reviewText;
-    @Column(nullable = false)
     private LocalDate watchDate;
     private LocalDate reviewDate;
 
@@ -35,7 +34,7 @@ public class Review {
     private Set<ReviewComment> reviewComments;
 
     @Builder
-    public Review(Movie movie, User user, Float rating, String comment, LocalDate watchDate, LocalDate reviewDate) {
+    public Review(Movie movie, User user, Integer rating, String comment, LocalDate watchDate, LocalDate reviewDate) {
         this.movie = movie;
         this.user = user;
         this.rating = rating;

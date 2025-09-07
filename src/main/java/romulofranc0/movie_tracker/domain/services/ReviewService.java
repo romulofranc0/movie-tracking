@@ -3,17 +3,21 @@ package romulofranc0.movie_tracker.domain.services;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import romulofranc0.movie_tracker.application.mappers.MovieMapper;
+import romulofranc0.movie_tracker.application.mappers.ReviewMapper;
 import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
-import romulofranc0.movie_tracker.application.models.responses.ClientMovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.MovieResponse;
 import romulofranc0.movie_tracker.application.models.responses.ReviewResponse;
 import romulofranc0.movie_tracker.domain.entities.ReviewComment;
 import romulofranc0.movie_tracker.domain.entities.User;
 import romulofranc0.movie_tracker.domain.entities.Movie;
 import romulofranc0.movie_tracker.domain.entities.Review;
+import romulofranc0.movie_tracker.domain.exceptions.MovieNotFoundException;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewNotFoundException;
 import romulofranc0.movie_tracker.domain.exceptions.UserNotFoundException;
@@ -35,11 +39,12 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final OmdbService omdbService;
+    private final ReviewMapper reviewMapper;
+    private final MovieMapper movieMapper;
 
     @Transactional
     public Review createReview(ReviewRequest reviewRequest){
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info(username);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
 
         final int MAX_COMMENT_LENGTH = 500;
@@ -71,7 +76,7 @@ public class ReviewService {
                 .movie(movie)
                 .comment(reviewRequest.reviewText())
                 .rating(reviewRequest.rating())
-                .watchDate(reviewRequest.watchDate())
+                .watchDate(reviewRequest.watchDate() != null ? reviewRequest.watchDate() : null)
                 .build();
 
            reviewRepository.save(review);
@@ -85,18 +90,47 @@ public class ReviewService {
 
     public ReviewResponse getReviewById(Long reviewId){
        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("review not found"));
+       Movie movie = movieRepository.findByImdbId(review.getMovie().getImdbID()).orElseThrow(() -> new MovieNotFoundException("Movie not found"));
+       MovieResponse movieResponse = movieMapper.toMovieResponse(movie);
         return new ReviewResponse(
                  review.getId(),
                  review.getMovie().getImdbID(),
                  review.getRating(),
                  review.getReviewText(),
-                 review.getWatchDate());
+                 review.getWatchDate(),
+                movieResponse
+                );
+    }
+
+    public ReviewResponse getReviewByImdbId(String imdbId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        var username = auth.getName();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Review review = reviewRepository.findByMovieImdbIDAndUserId(imdbId, user.getId()).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
+
+        return reviewMapper.toReviewResponse(review);
+    }
+
+    public Boolean reviewsExists(String imdbId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        var username = auth.getName();
+
+        Long userId = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"))
+                .getId();
+
+        return reviewRepository.existsByMovieImdbIDAndUserId(imdbId, userId);
     }
 
     @Transactional
     public void updateReview(ReviewRequest reviewRequest){
         Review review = reviewRepository
-                .findByImdbIdAndUsername(reviewRequest.imdbId(), SecurityContextHolder.getContext().getAuthentication().getName())
+                .findById(reviewRequest.reviewId())
                 .orElseThrow(() -> new ReviewNotFoundException("Review not found"));
 
         if(reviewRequest.reviewText() != null)review.setReviewText(reviewRequest.reviewText());
@@ -111,13 +145,23 @@ public class ReviewService {
     }
 
     public List<ReviewResponse> getAllReviews() {
-        return reviewRepository.findAll().stream()
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        var username = auth.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return reviewRepository.findAllByUserId(user.getId()).stream()
                 .map(review -> new ReviewResponse(
-                        review.getUser().getId(),
+                        review.getId(),
                         review.getMovie().getImdbID(),
                         review.getRating(),
                         review.getReviewText(),
-                        review.getWatchDate()
+                        review.getWatchDate(),
+                        movieMapper.toMovieResponse(movieRepository
+                                .findByImdbId(review
+                                        .getMovie()
+                                        .getImdbID())
+                                .orElseThrow(() -> new MovieNotFoundException("Movie not found")))
+
                 ))
                 .collect(Collectors.toList());
     }

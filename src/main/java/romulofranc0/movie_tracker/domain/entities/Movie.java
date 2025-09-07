@@ -1,5 +1,6 @@
 package romulofranc0.movie_tracker.domain.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
@@ -19,6 +20,7 @@ public class Movie{
     private String director;
     private String genre;
     private String poster;
+    @Column(columnDefinition = "TEXT")
     private String plot;
     private String imdbRating;
 

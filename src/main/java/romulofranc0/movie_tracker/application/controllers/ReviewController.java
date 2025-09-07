@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/review")
+@RequestMapping("/api/reviews")
 public class ReviewController {
     private final ReviewService reviewService;
 
@@ -25,15 +25,25 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ReviewResponse> getReviewById(@PathVariable Long id){
         return ResponseEntity.ok(reviewService.getReviewById(id));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReviewById(@PathVariable Long id){
+    @GetMapping("/imdb/{imdbId}")
+    public ResponseEntity<ReviewResponse> getReviewByImdbId(@PathVariable String imdbId){
+        return ResponseEntity.ok(reviewService.getReviewByImdbId(imdbId));
+    }
 
-        reviewService.deleteById(id);
+    @GetMapping("/verify/{imdbId}")
+    public boolean verifyReview(@PathVariable String imdbId) {
+        return reviewService.reviewsExists(imdbId);
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReviewById(@PathVariable Long reviewId){
+
+        reviewService.deleteById(reviewId);
         return ResponseEntity.noContent().build();
     }
 
