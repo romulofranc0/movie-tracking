@@ -7,7 +7,8 @@ public record ReviewResponse(
         String imdbId,
         Integer rating,
         String reviewText,
-        LocalDate watchDate
+        LocalDate watchDate,
+        MovieResponse movieResponse
 ) {
 
 }

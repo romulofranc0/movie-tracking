@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import romulofranc0.movie_tracker.application.mappers.MovieMapper;
 import romulofranc0.movie_tracker.application.mappers.ReviewMapper;
 import romulofranc0.movie_tracker.application.models.requests.CommentRequest;
 import romulofranc0.movie_tracker.application.models.requests.ReviewRequest;
@@ -16,6 +17,7 @@ import romulofranc0.movie_tracker.domain.entities.ReviewComment;
 import romulofranc0.movie_tracker.domain.entities.User;
 import romulofranc0.movie_tracker.domain.entities.Movie;
 import romulofranc0.movie_tracker.domain.entities.Review;
+import romulofranc0.movie_tracker.domain.exceptions.MovieNotFoundException;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewAlreadyExistsException;
 import romulofranc0.movie_tracker.domain.exceptions.ReviewNotFoundException;
 import romulofranc0.movie_tracker.domain.exceptions.UserNotFoundException;
@@ -38,6 +40,7 @@ public class ReviewService {
     private final MovieRepository movieRepository;
     private final OmdbService omdbService;
     private final ReviewMapper reviewMapper;
+    private final MovieMapper movieMapper;
 
     @Transactional
     public Review createReview(ReviewRequest reviewRequest){
@@ -87,12 +90,16 @@ public class ReviewService {
 
     public ReviewResponse getReviewById(Long reviewId){
        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("review not found"));
+       Movie movie = movieRepository.findByImdbId(review.getMovie().getImdbID()).orElseThrow(() -> new MovieNotFoundException("Movie not found"));
+       MovieResponse movieResponse = movieMapper.toMovieResponse(movie);
         return new ReviewResponse(
                  review.getId(),
                  review.getMovie().getImdbID(),
                  review.getRating(),
                  review.getReviewText(),
-                 review.getWatchDate());
+                 review.getWatchDate(),
+                movieResponse
+                );
     }
 
     public ReviewResponse getReviewByImdbId(String imdbId){
@@ -148,7 +155,13 @@ public class ReviewService {
                         review.getMovie().getImdbID(),
                         review.getRating(),
                         review.getReviewText(),
-                        review.getWatchDate()
+                        review.getWatchDate(),
+                        movieMapper.toMovieResponse(movieRepository
+                                .findByImdbId(review
+                                        .getMovie()
+                                        .getImdbID())
+                                .orElseThrow(() -> new MovieNotFoundException("Movie not found")))
+
                 ))
                 .collect(Collectors.toList());
     }
