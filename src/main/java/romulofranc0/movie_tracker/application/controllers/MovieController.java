@@ -30,10 +30,5 @@ public class MovieController {
         return ResponseEntity.ok(movieResponse);
     }
 
-    @PostMapping("/list")
-    public ResponseEntity<?> createList(@RequestBody MovieListRequest request){
-        var response = movieListService.createMovieList(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
 }
