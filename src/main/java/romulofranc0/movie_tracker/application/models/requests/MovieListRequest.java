@@ -4,6 +4,6 @@ import java.util.Set;
 
 public record MovieListRequest(
         String name,
-        Set<String> imdbIds
+        String description
 ) {
 }

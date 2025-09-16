@@ -19,13 +19,19 @@ public class MovieListMapper {
     public Set<MovieListResponse> toMovieListResponses(List<MovieList> movieLists) {
         var movieListResponses= new HashSet<MovieListResponse>();
         for (MovieList movieList : movieLists) {
-            var movieListResponse = new MovieListResponse(
-                    movieList.getId(),
-                    movieList.getListName(),
-                    movieMapper.movieToResponses(movieList.getMovies())
-            );
+            var movieListResponse = toMovieListResponse(movieList);
             movieListResponses.add(movieListResponse);
         }
         return movieListResponses;
+    }
+
+    public MovieListResponse toMovieListResponse(MovieList movieList) {
+        var movieListResponse = new MovieListResponse(
+                movieList.getId(),
+                movieList.getListName(),
+                movieMapper.movieToResponses(movieList.getMovies())
+        );
+
+        return movieListResponse;
     }
 }
