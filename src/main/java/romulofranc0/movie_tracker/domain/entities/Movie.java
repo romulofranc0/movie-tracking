@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +27,8 @@ public class Movie{
     private String imdbRating;
 
     @ManyToMany(mappedBy = "movies")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<MovieList> movieLists = new HashSet<MovieList>();
 
 }

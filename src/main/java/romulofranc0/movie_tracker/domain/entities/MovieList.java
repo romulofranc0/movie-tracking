@@ -2,11 +2,13 @@ package romulofranc0.movie_tracker.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Set;
 
 @Data
 @Entity
+@ToString(exclude = "movies")
 public class MovieList {
 
     @Id
@@ -15,11 +17,18 @@ public class MovieList {
 
     private String listName;
 
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH})
     @JoinTable(
             name = "movielist_movie",
             joinColumns = @JoinColumn(name = "movielist_id"),

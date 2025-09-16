@@ -1,10 +1,8 @@
 package romulofranc0.movie_tracker.application.controllers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import romulofranc0.movie_tracker.application.models.requests.MovieListRequest;
 import romulofranc0.movie_tracker.application.models.responses.*;
 import romulofranc0.movie_tracker.domain.services.MovieListService;
 import romulofranc0.movie_tracker.domain.services.OmdbService;
@@ -30,10 +28,5 @@ public class MovieController {
         return ResponseEntity.ok(movieResponse);
     }
 
-    @PostMapping("/list")
-    public ResponseEntity<?> createList(@RequestBody MovieListRequest request){
-        var response = movieListService.createMovieList(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
 }
